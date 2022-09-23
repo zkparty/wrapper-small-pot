@@ -2,6 +2,7 @@ mod utils;
 
 use console_error_panic_hook;
 use wasm_bindgen::prelude::*;
+use std::{fs::File, path::Path};
 use small_powers_of_tau::{srs::SRS, srs::Parameters, keypair::PrivateKey};
 
 #[wasm_bindgen]
@@ -18,4 +19,11 @@ pub fn contribute(json_arr: Vec<u8>, g1_size: usize, g2_size: usize) {
     // TODO: Vec<u8> is not json_arr type
     //let mut srs = SRS::deserialise(json_arr, parameters);
     //TODO: keep copying code from old-geoff/accumulator.rs
+}
+
+pub fn load_json_file(path: &Path) -> Result<String> {
+    let mut file = File::open(path)?;
+    let mut contents = String::new();
+    file.read_to_string(&mut contents)?;
+    Ok(contents)
 }
