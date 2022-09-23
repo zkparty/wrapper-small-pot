@@ -14,11 +14,17 @@ crate-type = ["cdylib", "rlib"]
 default = ["console_error_panic_hook"]
 
 [dependencies]
+ark-serialize = { version = "0.3" }
+eyre = "0.6.8"
 getrandom = { version = "0.2", features = ["js"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1.0.48"
 small-powers-of-tau = { git = "https://github.com/crate-crypto/small-powers-of-tau" }
 
+[target."wasm32-unknown-unknown".dependencies]
+js-sys = { version = "0.3.58"}
 wasm-bindgen = "0.2.74"
-#wasm-bindgen-rayon = { version = "1.0", features = ["no-bundler"] }
+wasm-bindgen-rayon = { version = "1.0", features = ["no-bundler"] }
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires
