@@ -55,13 +55,13 @@ pub fn check_subgroup_with_string(json: String) -> Result<bool> {
     let json = serde_json::from_str(&json).unwrap();
     // TODO: Transcript serialize is not implemented
     let transcript = serde_json::from_value::<Transcript>(json)?;
-    let result = subgroup_check(transcript)?;
+    let result = check_subgroup(transcript)?;
     Ok(result)
 }
 /**
  * Core function: check participant contribution was included
  */
-fn subgroup_check(transcript: Transcript) -> Result<bool> {
+fn check_subgroup(transcript: Transcript) -> Result<bool> {
     let result = transcript_subgroup_check(transcript);
     Ok(result)
 }
