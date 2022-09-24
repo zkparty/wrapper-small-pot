@@ -1,37 +1,13 @@
 use eyre::Result;
 use std::{fs::File, path::Path};
 use ark_serialize::{Read, Write};
-use small_powers_of_tau::srs::SRS;
-use small_powers_of_tau::sdk::{Transcript, TranscriptJSON, transcript_subgroup_check, update_transcript};
-
-// TEMPORARY COMMENT:
-// To use functions from the project use crate::package_name
-// Because library compilation is done before binary compilation
-// After binary compilation (in main.rs or similar) you can use use wrapper_small_pot::package_name;
-
-const NUM_CEREMONIES: usize = 4;
-
-// Fix implement from in Kev's code
-fn from_json(transcript_json: TranscriptJSON) -> Transcript {
-    let sub_ceremonies_option: [Option<SRS>; NUM_CEREMONIES] = transcript_json
-        .sub_ceremonies
-        .clone()
-        .map(|srs_json| (&srs_json).into());
-
-    let mut sub_ceremonies = Vec::new();
-
-    for optional_srs in sub_ceremonies_option {
-        match optional_srs {
-            Some(srs) => sub_ceremonies.push(srs),
-            None => return Transcript::default(),
-        }
-    }
-
-    Transcript {
-        sub_ceremonies: sub_ceremonies.try_into().unwrap(),
-    }
-}
-
+use small_powers_of_tau::sdk::{
+    Transcript,
+    TranscriptJSON,
+    transcript_subgroup_check,
+    update_transcript,
+    NUM_CEREMONIES
+};
 
 /**
  * We'll use this function in the cli
@@ -50,7 +26,7 @@ pub fn contribute_with_string(json: String, string_secrets: [&str; NUM_CEREMONIE
 
     let transcript_value = serde_json::from_str(&json).unwrap();
     let transcript_json = serde_json::from_value::<TranscriptJSON>(transcript_value)?;
-    let transcript = from_json(transcript_json);
+    let transcript = Transcript::from(&transcript_json);
 
     let post = contribute(transcript, secrets)?;
 
@@ -81,9 +57,8 @@ pub fn check_subgroup_with_file(in_path: &str) -> Result<()> {
  */
 pub fn check_subgroup_with_string(json: String) -> Result<bool> {
     let transcript_value = serde_json::from_str(&json).unwrap();
-    // TODO: Transcript serialize is not implemented
     let transcript_json = serde_json::from_value::<TranscriptJSON>(transcript_value)?;
-    let transcript = from_json(transcript_json);
+    let transcript = Transcript::from(&transcript_json);
     let result = check_subgroup(transcript)?;
     Ok(result)
 }

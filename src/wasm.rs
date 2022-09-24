@@ -25,3 +25,5 @@ pub fn subgroup_check_wasm(input: &str) -> String {
     let result = check_subgroup_with_string(input).unwrap();
     return format!("{}", result);
 }
+
+// TODO: create update_proof_check functions
