@@ -12,16 +12,16 @@ pub fn init_threads(n: usize) -> Promise {
 }
 
 #[wasm_bindgen]
-pub fn contribute_wasm(input: &str, string_seed: &str) -> String {
+pub fn contribute_wasm(input: &str, string_secrets: [&str]) -> String {
     let result = contribute_with_string(
         input.to_string(),
-        string_seed.to_string()
+        string_secrets
     ).unwrap();
     return format!("{}", result);
 }
 
 #[wasm_bindgen]
-pub fn subgroup_check_wasm(input: &str, string_seed: &str) -> String {
+pub fn subgroup_check_wasm(input: &str) -> String {
     let result = check_subgroup_with_string(input).unwrap();
     return format!("{}", result);
 }

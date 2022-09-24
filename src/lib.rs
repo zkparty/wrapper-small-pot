@@ -1,42 +1,70 @@
 use eyre::Result;
-use ark_serialize::{Read, Write};
 use std::{fs::File, path::Path};
-use small_powers_of_tau::sdk::{Transcript, transcript_subgroup_check, update_transcript};
+use ark_serialize::{Read, Write};
+use small_powers_of_tau::srs::SRS;
+use small_powers_of_tau::sdk::{Transcript, TranscriptJSON, transcript_subgroup_check, update_transcript};
 
 // TEMPORARY COMMENT:
 // To use functions from the project use crate::package_name
 // Because library compilation is done before binary compilation
 // After binary compilation (in main.rs or similar) you can use use wrapper_small_pot::package_name;
 
+const NUM_CEREMONIES: usize = 4;
+
+// Fix implement from in Kev's code
+fn from_json(transcript_json: TranscriptJSON) -> Transcript {
+    let sub_ceremonies_option: [Option<SRS>; NUM_CEREMONIES] = transcript_json
+        .sub_ceremonies
+        .clone()
+        .map(|srs_json| (&srs_json).into());
+
+    let mut sub_ceremonies = Vec::new();
+
+    for optional_srs in sub_ceremonies_option {
+        match optional_srs {
+            Some(srs) => sub_ceremonies.push(srs),
+            None => return Transcript::default(),
+        }
+    }
+
+    Transcript {
+        sub_ceremonies: sub_ceremonies.try_into().unwrap(),
+    }
+}
+
+
 /**
  * We'll use this function in the cli
  */
-pub fn contribute_with_file(in_path: &str, out_path: &str, string_seed: &str) -> Result<()> {
+pub fn contribute_with_file(in_path: &str, out_path: &str, string_secrets: [&str; NUM_CEREMONIES]) -> Result<()> {
     let json = read_json_file(in_path)?;
-    let result = contribute_with_string(json, string_seed)?;
+    let result = contribute_with_string(json, string_secrets)?;
     write_json_file(out_path, &result)
 }
 /**
  * We'll use this function in the wasm
  */
-pub fn contribute_with_string(json: String, string_seed: &str) -> Result<String> {
-    let seed = string_seed.to_owned();
-    let previous_json = serde_json::from_str(&json).unwrap();
-    // TODO: Transcript serialize is not implemented
-    let previous = serde_json::from_value::<Transcript>(previous_json)?;
-    let post = contribute(previous, seed)?;
-    let post_string = serde_json::to_string(&post)?;
+pub fn contribute_with_string(json: String, string_secrets: [&str; NUM_CEREMONIES]) -> Result<String> {
+    //let seed = string_seed.to_owned();
+    let secrets = string_secrets.map(|s| s.to_string());
+
+    let transcript_value = serde_json::from_str(&json).unwrap();
+    let transcript_json = serde_json::from_value::<TranscriptJSON>(transcript_value)?;
+    let transcript = from_json(transcript_json);
+
+    let post = contribute(transcript, secrets)?;
+
+    let post_json = TranscriptJSON::from(&post);
+    let post_string = serde_json::to_string(&post_json)?;
     Ok(post_string)
 }
 /**
  * Core function: add participant contribution to transcripts
  */
-fn contribute(previous: Transcript, seed: String) -> Result<Transcript> {
-    // TODO: create secrets
-    let result = update_transcript(transcript, secrets)?;
-    // TODO: check previous
-    // TODO: perform update
-    Ok(Transcript::default())
+fn contribute(transcript: Transcript, secrets: [String; NUM_CEREMONIES]) -> Result<Transcript> {
+    // TODO: check previous transcript
+    let (result, _proof) = update_transcript(transcript, secrets).unwrap();
+    Ok(result)
 }
 
 
@@ -52,9 +80,10 @@ pub fn check_subgroup_with_file(in_path: &str) -> Result<()> {
  * We'll use this function in the wasm
  */
 pub fn check_subgroup_with_string(json: String) -> Result<bool> {
-    let json = serde_json::from_str(&json).unwrap();
+    let transcript_value = serde_json::from_str(&json).unwrap();
     // TODO: Transcript serialize is not implemented
-    let transcript = serde_json::from_value::<Transcript>(json)?;
+    let transcript_json = serde_json::from_value::<TranscriptJSON>(transcript_value)?;
+    let transcript = from_json(transcript_json);
     let result = check_subgroup(transcript)?;
     Ok(result)
 }
