@@ -38,8 +38,10 @@ pub fn contribute_with_string(json: String, string_secrets: [&str; NUM_CEREMONIE
  * Core function: add participant contribution to transcripts
  */
 fn contribute(transcript: Transcript, secrets: [String; NUM_CEREMONIES]) -> Result<Transcript> {
-    // TODO: check previous transcript
-    let (result, _proof) = update_transcript(transcript, secrets).unwrap();
+    let (result, _proof) = update_transcript(
+        transcript,
+        secrets
+    ).expect("Update transcript failed");
     Ok(result)
 }
 
