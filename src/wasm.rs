@@ -26,4 +26,5 @@ pub fn subgroup_check_wasm(input: &str) -> String {
     return format!("{}", result);
 }
 
+// TODO: check json schema using API functions
 // TODO: create update_proof_check functions

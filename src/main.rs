@@ -5,8 +5,8 @@ fn main() {
     println!("Hello, wrapper-small-pot!");
     let start = Instant::now();
     contribute_with_file(
-        "initialTranscript.json",
-        "finalTranscript.json",
+        "initialContribution.json",
+        "finalContribution.json",
         ["entropy","generated","by", "participant"]
     ).unwrap();
     println!("total time: {:?}", start.elapsed());
