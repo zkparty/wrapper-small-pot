@@ -35,7 +35,7 @@ To get the files for integrate the code into Javascript, you can run:
 ### **Test**
 To test that the wasm is called correctly in a web setting, you can run a HTTP server:
 
-``` cd wasm ```
+``` cd wasm ``` && 
 ``` python3 server.py ```
 
-In some cases, the `wasm-worker.js` might not run and not throw any error. This issue could be cause because the functions in `wasm.rs` where not binded correctly.
+In some cases, the `wasm-worker.js` might not run and not throw any error. This issue could be caused because the functions in `wasm.rs` where not binded correctly.
