@@ -1,13 +1,13 @@
 use eyre::Result;
 use std::{fs::File, path::Path};
 use ark_serialize::{Read, Write};
+use small_powers_of_tau::sdk::NUM_CEREMONIES;
 use small_powers_of_tau::sdk::contribution::{
     Contribution,
     ContributionJSON,
     contribution_subgroup_check,
-    update_contribution,
+    update_contribution
 };
-use small_powers_of_tau::sdk::NUM_CEREMONIES;
 
 /**
  * We'll use this function in the cli
@@ -21,12 +21,11 @@ pub fn contribute_with_file(in_path: &str, out_path: &str, string_secrets: [&str
  * We'll use this function in the wasm
  */
 pub fn contribute_with_string(json: String, string_secrets: [&str; NUM_CEREMONIES]) -> Result<String> {
-    //let seed = string_seed.to_owned();
     let secrets = string_secrets.map(|s| s.to_string());
 
-    let transcript_value = serde_json::from_str(&json).unwrap();
-    let transcript_json = serde_json::from_value::<ContributionJSON>(transcript_value)?;
-    let contribution = Contribution::from(&transcript_json);
+    let contribution_value = serde_json::from_str(&json).unwrap();
+    let contribution_json = serde_json::from_value::<ContributionJSON>(contribution_value)?;
+    let contribution = Contribution::from(&contribution_json);
 
     let post = contribute(contribution, secrets)?;
 
@@ -35,13 +34,13 @@ pub fn contribute_with_string(json: String, string_secrets: [&str; NUM_CEREMONIE
     Ok(post_string)
 }
 /**
- * Core function: add participant contribution to transcripts
+ * Core function: add participant contribution
  */
-fn contribute(transcript: Contribution, secrets: [String; NUM_CEREMONIES]) -> Result<Contribution> {
+fn contribute(contribution: Contribution, secrets: [String; NUM_CEREMONIES]) -> Result<Contribution> {
     let (result, _proof) = update_contribution(
-        transcript,
+        contribution,
         secrets
-    ).expect("Update transcript failed");
+    ).expect("Update contribution failed");
     Ok(result)
 }
 
@@ -58,17 +57,17 @@ pub fn check_subgroup_with_file(in_path: &str) -> Result<()> {
  * We'll use this function in the wasm
  */
 pub fn check_subgroup_with_string(json: String) -> Result<bool> {
-    let transcript_value = serde_json::from_str(&json).unwrap();
-    let transcript_json = serde_json::from_value::<ContributionJSON>(transcript_value)?;
-    let transcript = Contribution::from(&transcript_json);
-    let result = check_subgroup(transcript)?;
+    let contribution_value = serde_json::from_str(&json).unwrap();
+    let contribution_json = serde_json::from_value::<ContributionJSON>(contribution_value)?;
+    let contribution = Contribution::from(&contribution_json);
+    let result = check_subgroup(contribution)?;
     Ok(result)
 }
 /**
  * Core function: check participant contribution was included
  */
-fn check_subgroup(transcript: Contribution) -> Result<bool> {
-    let result = contribution_subgroup_check(transcript);
+fn check_subgroup(contribution: Contribution) -> Result<bool> {
+    let result = contribution_subgroup_check(contribution);
     Ok(result)
 }
 // TODO: create update_proof_check functions
