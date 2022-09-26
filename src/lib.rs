@@ -1,3 +1,6 @@
+#[cfg(target_family = "wasm")]
+mod wasm;
+
 use eyre::Result;
 use std::{fs::File, path::Path};
 use ark_serialize::{Read, Write};

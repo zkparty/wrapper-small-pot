@@ -2,10 +2,10 @@ use std::panic;
 use js_sys::Promise;
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen_rayon::init_thread_pool;
-use wrapper_small_pot::{
+use crate::{
+    check_subgroup_with_string,
     verify_update_with_string,
     contribute_with_string,
-    check_with_string
 };
 
 #[wasm_bindgen]
@@ -15,22 +15,34 @@ pub fn init_threads(n: usize) -> Promise {
 }
 
 #[wasm_bindgen]
-pub fn contribute_wasm(input: &str, string_secrets: [&str]) -> String {
+pub fn contribute_wasm(input: &str, secret_0: &str, secret_1: &str, secret_2: &str, secret_3: &str) -> String {
+    let string_secrets = [
+        secret_0,
+        secret_1,
+        secret_2,
+        secret_3,
+    ];
     let result = contribute_with_string(
         input.to_string(),
         string_secrets
     ).unwrap();
-    return format!("{}", result);
+    return format!("{:?}", result);
 }
 
 #[wasm_bindgen]
 pub fn subgroup_check_wasm(input: &str) -> String {
-    let result = check_subgroup_with_string(input).unwrap();
+    let result = check_subgroup_with_string(input.to_string()).unwrap();
     return format!("{}", result);
 }
 
 #[wasm_bindgen]
-pub fn verify_update_wasm(input: &str, output: &str, proofs: &str, string_secrets: [&str]) -> String {
+pub fn verify_update_wasm(input: &str, output: &str, proofs: &str, secret_0: &str, secret_1: &str, secret_2: &str, secret_3: &str) -> String {
+    let string_secrets = [
+        secret_0,
+        secret_1,
+        secret_2,
+        secret_3,
+    ];
     let result = verify_update_with_string(
         input.to_string(),
         output.to_string(),
