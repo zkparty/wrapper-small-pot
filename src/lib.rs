@@ -51,7 +51,7 @@ fn contribute(contribution: Contribution, secrets: [String; NUM_CEREMONIES]) -> 
 pub fn check_subgroup_with_file(in_path: &str) -> Result<()> {
     let json = read_json_file(in_path)?;
     let result = check_subgroup_with_string(json)?;
-    Ok(println!("user contribution is in file: {:?}", result))
+    Ok(println!("Subgroup check is correct: {:?}", result))
 }
 /**
  * We'll use this function in the wasm
@@ -64,7 +64,7 @@ pub fn check_subgroup_with_string(json: String) -> Result<bool> {
     Ok(result)
 }
 /**
- * Core function: check participant contribution was included
+ * Core function: check subgroup is correct
  */
 fn check_subgroup(contribution: Contribution) -> Result<bool> {
     let result = contribution_subgroup_check(contribution);
