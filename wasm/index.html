@@ -21,11 +21,9 @@
           document.getElementById('entropy_2').value,
           document.getElementById('entropy_3').value,
         ];
-        console.log('before worker')
         const worker = new Worker('wasm-worker.js', {
           type: 'module'
         });
-        console.log(worker)
         // start worker
         worker.postMessage(entropy);
       });

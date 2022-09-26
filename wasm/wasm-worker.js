@@ -1,7 +1,6 @@
 import init, {init_threads, contribute_wasm} from "./pkg/wrapper_small_pot.js";
 
 onmessage = async (event) => {
-    console.log('hellow')
     const entropy = event.data;
     console.log("available threads:", navigator.hardwareConcurrency);
 
@@ -11,15 +10,22 @@ onmessage = async (event) => {
     fetch('./initialContribution.json').then(response => {
         response.json().then(async (data) => {
             let json_string = JSON.stringify(data);
+            let secrets = await Promise.all([
+                sha256(entropy[0]),
+                sha256(entropy[1]),
+                sha256(entropy[2]),
+                sha256(entropy[3]),
+            ]);
+            secrets = secrets.map(secret => '0x' + secret);
 
             console.log("start");
             let startTime = performance.now();
             let res = contribute_wasm(
                 json_string,
-                await sha256(entropy[0]),
-                await sha256(entropy[1]),
-                await sha256(entropy[2]),
-                await sha256(entropy[3]),
+                secrets[0],
+                secrets[1],
+                secrets[2],
+                secrets[3],
             );
             let endTime = performance.now();
 
