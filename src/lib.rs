@@ -13,6 +13,8 @@ use small_powers_of_tau::sdk::contribution::{
     ContributionJSON,
     Contribution,
 };
+use small_powers_of_tau::keypair::{PrivateKey};
+use hex::FromHex;
 
 /**
  * We'll use this function in the cli
@@ -106,6 +108,20 @@ fn verify_update(old_contribution: Contribution, new_contribution: Contribution,
         secrets,
     );
     Ok(result)
+}
+
+fn get_pubkeys(secrets: [String; NUM_CEREMONIES]) -> Result<Vec<String>> {
+    let mut keypairs = Vec::with_capacity(NUM_CEREMONIES);
+    for (i, secret_hex) in secrets.into_iter().enumerate() {
+        if let Some(stripped_point_json) = secret_hex.strip_prefix("0x") {
+            let bytes = <[u8; 4]>::from_hex(stripped_point_json).ok();
+            if (bytes.is_some()) {
+                let priv_key = PrivateKey::from_bytes(&bytes.unwrap());
+                keypairs.push(priv_key.to_public());
+            }
+        }
+    }
+    Ok(keypairs)
 }
 
 
