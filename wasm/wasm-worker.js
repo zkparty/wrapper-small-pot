@@ -28,11 +28,20 @@ onmessage = async (event) => {
                 secrets[3],
             );
             const endTime = performance.now();
-            const contribution = JSON.parse(result.contribution);
-            const proofs = JSON.parse(result.proofs);
 
-            console.log(contribution)
-            console.log(proofs)
+            const postContribution = JSON.parse(result.contribution);
+            const contributions = postContribution.contributions;
+            const proofs = JSON.parse(result.proofs);
+            contributions.forEach((contribution, i) => {
+                contribution.potPubkey = proofs[i][0]; //commitment_to_secret
+            });
+            const newResult = {
+                'contribution': JSON.stringify({
+                    'contributions': contributions
+                }),
+                'proofs': result.proofs,
+            }
+            console.log(newResult);
 
             console.log(`Contribution took ${endTime - startTime} milliseconds`)
         });

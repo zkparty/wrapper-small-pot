@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["Nico Serrano"]
 edition = "2021"
 description = "Small Powers of Tau Rust code wrapper to be used in browsers for participants' contributions"
-repository = "https://github.com/zkparty/small-powers-of-tau"
+repository = "https://github.com/zkparty/wrapper-small-pot"
 license = "ISC"
 
 [lib]
