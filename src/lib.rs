@@ -114,43 +114,52 @@ fn verify_update(old_contribution: Contribution, new_contribution: Contribution,
  */
 fn read_json_file(string_path: &str) -> Result<String> {
     let path = Path::new(string_path);
-    let mut file = File::open(path)?;
+    let mut file = File::open(path)
+    .expect("error opening file");
     let mut content = String::new();
-    file.read_to_string(&mut content)?;
+    file.read_to_string(&mut content)
+    .expect("error reading file");
     Ok(content)
 }
 
 fn write_json_file(string_path: &str, content: &str) -> Result<()> {
     let buf = content.as_bytes();
     let path = Path::new(string_path);
-    let mut file = File::create(path)?;
-    file.write_all(buf)?;
+    let mut file = File::create(path).expect("error creating file");
+    file.write_all(buf).expect("error writing in file");
     Ok(())
 }
 
 fn json_to_contribution(json: String) -> Result<Contribution> {
-    let contribution_value = serde_json::from_str(&json).unwrap();
-    let contribution_json = serde_json::from_value::<ContributionJSON>(contribution_value)?;
+    let contribution_value = serde_json::from_str(&json)
+    .expect("error parsing contribution string to json");
+    let contribution_json = serde_json::from_value::<ContributionJSON>(contribution_value)
+    .expect("error parsing json to contribution");
     let contribution = Contribution::from(&contribution_json);
     Ok(contribution)
 }
 
 fn contribution_to_json(contribution: Contribution) -> Result<String> {
     let contribution_json = ContributionJSON::from(&contribution);
-    let contribution_string = serde_json::to_string(&contribution_json)?;
+    let contribution_string = serde_json::to_string(&contribution_json)
+    .expect("error serializing contribution json to string");
     Ok(contribution_string)
 }
 
 fn json_to_update_proofs(json: String) -> Result<[UpdateProof; NUM_CEREMONIES]> {
-    let update_proofs_value = serde_json::from_str(&json).unwrap();
-    let update_proofs_json = serde_json::from_value::<[[String; 2]; NUM_CEREMONIES]>(update_proofs_value)?;
-    let update_proofs = update_proofs_json.map(|json_array| UpdateProof::deserialise(json_array).unwrap());
+    let update_proofs_value = serde_json::from_str(&json)
+    .expect("error parsing update proof string to json");
+    let update_proofs_json = serde_json::from_value::<[[String; 2]; NUM_CEREMONIES]>(update_proofs_value)
+    .expect("error parsing json to update proofs object");
+    let update_proofs = update_proofs_json.map(|json_array| UpdateProof::deserialise(json_array)
+    .expect("error parsing json to specific update proof"));
     Ok(update_proofs)
 }
 
 
 fn update_proofs_to_json(update_proofs: [UpdateProof; NUM_CEREMONIES]) -> Result<String> {
     let proofs_list = update_proofs.map(|proof: UpdateProof| proof.serialise());
-    let proofs_string = serde_json::to_string(&proofs_list)?;
+    let proofs_string = serde_json::to_string(&proofs_list)
+    .expect("error serializing update proofs to string");
     Ok(proofs_string)
 }

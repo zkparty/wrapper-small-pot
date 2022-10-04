@@ -62,5 +62,3 @@ pub fn verify_update_wasm(input: &str, output: &str, proofs: &str, secret_0: &st
     ).unwrap();
     return format!("{}", result);
 }
-
-// TODO: check json schema using API functions
