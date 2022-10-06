@@ -20,7 +20,7 @@ To build and run the wrapper code and test it using the code inside the `main.rs
 
 ``` cargo run --release --target x86_64-unknown-linux-gnu ```
 
-*Note:* In Ubuntu/Linux you can use target `x86_64-unknown-linux-gnu`, in Windows you can use `WINDOWS_TARGET_HERE`
+*Note:* In Ubuntu/Linux you can use target `x86_64-unknown-linux-gnu`, in Windows you can use `x86_64-pc-windows-msvc`
 
 &nbsp;
 
