@@ -110,18 +110,23 @@ fn verify_update(old_contribution: Contribution, new_contribution: Contribution,
     Ok(result)
 }
 
-fn get_pubkeys(secrets: [String; NUM_CEREMONIES]) -> Result<Vec<String>> {
-    let mut keypairs = Vec::with_capacity(NUM_CEREMONIES);
-    for (i, secret_hex) in secrets.into_iter().enumerate() {
-        if let Some(stripped_point_json) = secret_hex.strip_prefix("0x") {
-            let bytes = <[u8; 4]>::from_hex(stripped_point_json).ok();
-            if (bytes.is_some()) {
-                let priv_key = PrivateKey::from_bytes(&bytes.unwrap());
-                keypairs.push(priv_key.to_public());
+/**
+ * Core function: get potPubkeys from secrets
+ */
+pub fn get_pot_pubkeys(string_secrets: [&str; NUM_CEREMONIES]) -> Result<Vec<String>> {
+    let mut pot_pubkeys = Vec::with_capacity(NUM_CEREMONIES);
+    for(_i, secret_string) in string_secrets.into_iter().enumerate() {
+        let secret_hex = secret_string.to_string();
+        if let Some(secret_stripped) = secret_hex.strip_prefix("0x") {
+            // TODO: keep in mind that secrets needs at least 12 characters
+            let bytes = <[u8; 12]>::from_hex(secret_stripped).unwrap();
+            if !bytes.is_empty() {
+                let private_key = PrivateKey::from_bytes(&bytes);
+                pot_pubkeys.push(private_key.to_public().to_string());
             }
         }
     }
-    Ok(keypairs)
+    Ok(pot_pubkeys)
 }
 
 
