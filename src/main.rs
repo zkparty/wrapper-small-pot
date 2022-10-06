@@ -20,7 +20,7 @@ fn main() {
     ];
 
     let pot_pubkeys = get_pot_pubkeys(string_secrets).unwrap();
-    println!("{:?}", pot_pubkeys[1]);
+    println!("{:?}", pot_pubkeys[0]);
     /*
     println!("subgroup check with file initialized");
     let start_subgroup_check = Instant::now();
@@ -49,4 +49,31 @@ fn main() {
     ).unwrap();
     println!("verify update time: {:?}", start_verify_update.elapsed());
     */
+}
+
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn secrets_to_pubkey_test() {
+        // This test ensures that pubkeys dericvation appears correct
+        let string_secrets = [
+            "0xaabbccddeeff001122334455",
+            "0x001122334455667788aa99bb",
+            "0x0a1b2c3d4e5f0a1b2c3d4e5f",
+            "0x0a9a8a7b6c5c4d3f11223344",
+        ];
+    
+        let pot_pubkeys = get_pot_pubkeys(string_secrets).unwrap();
+        println!("{:?}", pot_pubkeys[0]);
+        println!("{:?}", pot_pubkeys[1]);
+        println!("{:?}", pot_pubkeys[2]);
+        println!("{:?}", pot_pubkeys[3]);
+    
+        assert_eq!(pot_pubkeys[0].get(0..2).unwrap(), String::from("0x"));
+        assert_eq!(pot_pubkeys[0].len(), 194);
+    }
 }
