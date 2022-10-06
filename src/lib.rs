@@ -4,6 +4,7 @@ mod wasm;
 use eyre::Result;
 use std::{fs::File, path::Path};
 use ark_serialize::{Read, Write};
+use ark_ec::{ProjectiveCurve};
 use small_powers_of_tau::update_proof::UpdateProof;
 use small_powers_of_tau::sdk::NUM_CEREMONIES;
 use small_powers_of_tau::sdk::contribution::{
@@ -14,6 +15,9 @@ use small_powers_of_tau::sdk::contribution::{
     Contribution,
 };
 use small_powers_of_tau::keypair::{PrivateKey};
+use small_powers_of_tau::interop_point_encoding::{
+    deserialize_g2, serialize_g2, G2_SERIALISED_SIZE,
+};
 use hex::FromHex;
 
 /**
@@ -122,7 +126,9 @@ pub fn get_pot_pubkeys(string_secrets: [&str; NUM_CEREMONIES]) -> Result<Vec<Str
             let bytes = <[u8; 12]>::from_hex(secret_stripped).unwrap();
             if !bytes.is_empty() {
                 let private_key = PrivateKey::from_bytes(&bytes);
-                pot_pubkeys.push(private_key.to_public().to_string());
+                let mut a = hex::encode(serialize_g2(&private_key.to_public().into_affine()));
+                a.insert_str(0, "0x");
+                pot_pubkeys.push(a);
             }
         }
     }

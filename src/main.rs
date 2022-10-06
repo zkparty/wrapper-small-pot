@@ -20,7 +20,7 @@ fn main() {
     ];
 
     let pot_pubkeys = get_pot_pubkeys(string_secrets).unwrap();
-    println!("{:?}", pot_pubkeys[0]);
+    println!("{:?}", pot_pubkeys[1]);
     /*
     println!("subgroup check with file initialized");
     let start_subgroup_check = Instant::now();
