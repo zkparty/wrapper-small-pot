@@ -22,6 +22,12 @@ To build and run the wrapper code and test it using the code inside the `main.rs
 
 *Note:* In Ubuntu/Linux you can use target `x86_64-unknown-linux-gnu`, in Windows you can use `WINDOWS_TARGET_HERE`
 
+
+### **Test**
+To build and run tests, run:
+
+``` cargo test ```
+
 &nbsp;
 
 
