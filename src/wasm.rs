@@ -1,12 +1,19 @@
 use std::panic;
 use js_sys::Promise;
-use wasm_bindgen::prelude::wasm_bindgen;
+use serde::{Deserialize, Serialize};
+use wasm_bindgen::prelude::{wasm_bindgen, JsValue};
 use wasm_bindgen_rayon::init_thread_pool;
 use crate::{
     check_subgroup_with_string,
     verify_update_with_string,
     contribute_with_string,
 };
+
+#[derive(Serialize, Deserialize)]
+struct ResultTuple {
+    contribution: String,
+    proofs: String,
+}
 
 #[wasm_bindgen]
 pub fn init_threads(n: usize) -> Promise {
@@ -15,18 +22,22 @@ pub fn init_threads(n: usize) -> Promise {
 }
 
 #[wasm_bindgen]
-pub fn contribute_wasm(input: &str, secret_0: &str, secret_1: &str, secret_2: &str, secret_3: &str) -> String {
+pub fn contribute_wasm(input: &str, secret_0: &str, secret_1: &str, secret_2: &str, secret_3: &str) -> JsValue {
     let string_secrets = [
         secret_0,
         secret_1,
         secret_2,
         secret_3,
     ];
-    let result = contribute_with_string(
+    let (contribution, proofs) = contribute_with_string(
         input.to_string(),
         string_secrets
     ).unwrap();
-    return format!("{:?}", result);
+    let result = &ResultTuple {
+        contribution,
+        proofs,
+    };
+    return serde_wasm_bindgen::to_value(&result).unwrap();
 }
 
 #[wasm_bindgen]
@@ -51,5 +62,3 @@ pub fn verify_update_wasm(input: &str, output: &str, proofs: &str, secret_0: &st
     ).unwrap();
     return format!("{}", result);
 }
-
-// TODO: check json schema using API functions

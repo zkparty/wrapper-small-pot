@@ -9,7 +9,7 @@ onmessage = async (event) => {
 
     fetch('./initialContribution.json').then(response => {
         response.json().then(async (data) => {
-            let json_string = JSON.stringify(data);
+            const json_string = JSON.stringify(data);
             let secrets = await Promise.all([
                 sha256(entropy[0]),
                 sha256(entropy[1]),
@@ -19,15 +19,29 @@ onmessage = async (event) => {
             secrets = secrets.map(secret => '0x' + secret);
 
             console.log("start");
-            let startTime = performance.now();
-            let res = contribute_wasm(
+            const startTime = performance.now();
+            const result = contribute_wasm(
                 json_string,
                 secrets[0],
                 secrets[1],
                 secrets[2],
                 secrets[3],
             );
-            let endTime = performance.now();
+            const endTime = performance.now();
+
+            const postContribution = JSON.parse(result.contribution);
+            const contributions = postContribution.contributions;
+            const proofs = JSON.parse(result.proofs);
+            contributions.forEach((contribution, i) => {
+                contribution.potPubkey = proofs[i][0]; //commitment_to_secret
+            });
+            const newResult = {
+                'contribution': JSON.stringify({
+                    'contributions': contributions
+                }),
+                'proofs': result.proofs,
+            }
+            console.log(newResult);
 
             console.log(`Contribution took ${endTime - startTime} milliseconds`)
         });
