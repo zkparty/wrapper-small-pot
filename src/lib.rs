@@ -36,7 +36,16 @@ pub fn contribute_with_string(json: String, string_secrets: [&str; NUM_CEREMONIE
     let contribution = json_to_contribution(json)?;
     let (post, update_proofs) = contribute(contribution, secrets)?;
 
-    let post_string = contribution_to_json(post)?;
+    let mut post_json = ContributionJSON::from(&post);
+    // you can also get potPubekys from updateProofJSON[0] values
+    let pot_pubkeys = get_pot_pubkeys(string_secrets)
+    .expect("error getting pot pubkeys from secrets");
+    for (i, pot_pubkey) in pot_pubkeys.into_iter().enumerate() {
+        post_json.contributions[i].pot_pubkey = pot_pubkey;
+    }
+    let post_string = serde_json::to_string(&post_json)
+    .expect("error serializing contribution json to string");
+
     let proofs_string = update_proofs_to_json(update_proofs)?;
     Ok((post_string, proofs_string))
 }
@@ -120,8 +129,7 @@ pub fn get_pot_pubkeys(string_secrets: [&str; NUM_CEREMONIES]) -> Result<Vec<Str
     for(_i, secret_string) in string_secrets.into_iter().enumerate() {
         let secret_hex = secret_string.to_string();
         if let Some(secret_stripped) = secret_hex.strip_prefix("0x") {
-            // TODO: keep in mind that secrets needs at least 12 characters
-            let bytes = <[u8; 12]>::from_hex(secret_stripped).unwrap();
+            let bytes = <[u8; 32]>::from_hex(secret_stripped).expect("secret is not 64 characters long");
             if !bytes.is_empty() {
                 let private_key = PrivateKey::from_bytes(&bytes);
                 let mut a = hex::encode(serialize_g2(&private_key.to_public().into_affine()));
@@ -180,7 +188,6 @@ fn json_to_update_proofs(json: String) -> Result<[UpdateProof; NUM_CEREMONIES]> 
     .expect("error parsing json to specific update proof"));
     Ok(update_proofs)
 }
-
 
 fn update_proofs_to_json(update_proofs: [UpdateProof; NUM_CEREMONIES]) -> Result<String> {
     let proofs_list = update_proofs.map(|proof: UpdateProof| proof.serialise());
