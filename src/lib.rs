@@ -2,10 +2,13 @@
 mod wasm;
 
 use eyre::Result;
+use hex::FromHex;
 use std::{fs::File, path::Path};
 use ark_serialize::{Read, Write};
 use ark_ec::{ProjectiveCurve};
+use small_powers_of_tau::keypair::PrivateKey;
 use small_powers_of_tau::update_proof::UpdateProof;
+use small_powers_of_tau::interop_point_encoding::serialize_g2;
 use small_powers_of_tau::sdk::NUM_CEREMONIES;
 use small_powers_of_tau::sdk::contribution::{
     contribution_subgroup_check,
@@ -14,11 +17,6 @@ use small_powers_of_tau::sdk::contribution::{
     ContributionJSON,
     Contribution,
 };
-use small_powers_of_tau::keypair::{PrivateKey};
-use small_powers_of_tau::interop_point_encoding::{
-    deserialize_g2, serialize_g2, G2_SERIALISED_SIZE,
-};
-use hex::FromHex;
 
 /**
  * We'll use this function in the cli
