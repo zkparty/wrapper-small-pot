@@ -7,6 +7,7 @@ use crate::{
     check_subgroup_with_string,
     verify_update_with_string,
     contribute_with_string,
+    get_pot_pubkeys,
 };
 
 #[derive(Serialize, Deserialize)]
@@ -41,9 +42,9 @@ pub fn contribute_wasm(input: &str, secret_0: &str, secret_1: &str, secret_2: &s
 }
 
 #[wasm_bindgen]
-pub fn subgroup_check_wasm(input: &str) -> String {
+pub fn subgroup_check_wasm(input: &str) -> bool {
     let result = check_subgroup_with_string(input.to_string()).unwrap();
-    return format!("{}", result);
+    return result;
 }
 
 #[wasm_bindgen]
@@ -61,4 +62,16 @@ pub fn verify_update_wasm(input: &str, output: &str, proofs: &str, secret_0: &st
         string_secrets
     ).unwrap();
     return format!("{}", result);
+}
+
+#[wasm_bindgen]
+pub fn get_pot_pubkeys_wasm(secret_0: &str, secret_1: &str, secret_2: &str, secret_3: &str) -> JsValue {
+    let string_secrets = [
+        secret_0,
+        secret_1,
+        secret_2,
+        secret_3,
+    ];
+    let pot_pubkeys = get_pot_pubkeys(string_secrets).unwrap();
+    return serde_wasm_bindgen::to_value(&pot_pubkeys).unwrap();
 }

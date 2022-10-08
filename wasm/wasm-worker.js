@@ -1,4 +1,8 @@
-import init, {init_threads, contribute_wasm} from "./pkg/wrapper_small_pot.js";
+import init, {
+    init_threads,
+    contribute_wasm,
+    subgroup_check_wasm
+} from "./pkg/wrapper_small_pot.js";
 
 onmessage = async (event) => {
     const entropy = event.data;
@@ -30,20 +34,11 @@ onmessage = async (event) => {
             const endTime = performance.now();
 
             const postContribution = JSON.parse(result.contribution);
-            const contributions = postContribution.contributions;
-            const proofs = JSON.parse(result.proofs);
-            contributions.forEach((contribution, i) => {
-                contribution.potPubkey = proofs[i][0]; //commitment_to_secret
-            });
-            const newResult = {
-                'contribution': JSON.stringify({
-                    'contributions': contributions
-                }),
-                'proofs': result.proofs,
-            }
-            console.log(newResult);
+            console.log(postContribution);
+            console.log(`Contribution took ${endTime - startTime} milliseconds`);
 
-            console.log(`Contribution took ${endTime - startTime} milliseconds`)
+            const checkContribution = subgroup_check_wasm(result.contribution);
+            console.log(checkContribution)
         });
     });
 }
