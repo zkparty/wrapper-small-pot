@@ -172,13 +172,6 @@ fn json_to_contribution(json: String) -> Result<Contribution> {
     Ok(contribution)
 }
 
-fn contribution_to_json(contribution: Contribution) -> Result<String> {
-    let contribution_json = ContributionJSON::from(&contribution);
-    let contribution_string = serde_json::to_string(&contribution_json)
-    .expect("error serializing contribution json to string");
-    Ok(contribution_string)
-}
-
 fn json_to_update_proofs(json: String) -> Result<[UpdateProof; NUM_CEREMONIES]> {
     let update_proofs_value = serde_json::from_str(&json)
     .expect("error parsing update proof string to json");

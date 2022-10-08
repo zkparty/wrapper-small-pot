@@ -42,9 +42,9 @@ pub fn contribute_wasm(input: &str, secret_0: &str, secret_1: &str, secret_2: &s
 }
 
 #[wasm_bindgen]
-pub fn subgroup_check_wasm(input: &str) -> String {
+pub fn subgroup_check_wasm(input: &str) -> bool {
     let result = check_subgroup_with_string(input.to_string()).unwrap();
-    return format!("{}", result);
+    return result;
 }
 
 #[wasm_bindgen]

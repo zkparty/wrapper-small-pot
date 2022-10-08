@@ -1,4 +1,8 @@
-import init, {init_threads, contribute_wasm} from "./pkg/wrapper_small_pot.js";
+import init, {
+    init_threads,
+    contribute_wasm,
+    subgroup_check_wasm
+} from "./pkg/wrapper_small_pot.js";
 
 onmessage = async (event) => {
     const entropy = event.data;
@@ -31,8 +35,10 @@ onmessage = async (event) => {
 
             const postContribution = JSON.parse(result.contribution);
             console.log(postContribution);
+            console.log(`Contribution took ${endTime - startTime} milliseconds`);
 
-            console.log(`Contribution took ${endTime - startTime} milliseconds`)
+            const checkContribution = subgroup_check_wasm(result.contribution);
+            console.log(checkContribution)
         });
     });
 }
