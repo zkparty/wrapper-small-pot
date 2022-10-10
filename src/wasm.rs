@@ -30,15 +30,11 @@ pub fn contribute_wasm(input: &str, secret_0: &str, secret_1: &str, secret_2: &s
         secret_2,
         secret_3,
     ];
-    let (contribution, proofs) = contribute_with_string(
+    let contribution = contribute_with_string(
         input.to_string(),
         string_secrets
     ).unwrap();
-    let result = &ResultTuple {
-        contribution,
-        proofs,
-    };
-    return serde_wasm_bindgen::to_value(&result).unwrap();
+    return serde_wasm_bindgen::to_value(&contribution).unwrap();
 }
 
 #[wasm_bindgen]

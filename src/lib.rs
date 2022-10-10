@@ -17,22 +17,29 @@ use small_powers_of_tau::sdk::contribution::{
     ContributionJSON,
     Contribution,
 };
+use kzg_ceremony_crypto::BLST;
+use kzg_ceremony_crypto::BatchContribution;
 
 /**
  * We'll use this function in the cli
  */
 pub fn contribute_with_file(in_path: &str, out_path: &str, proof_path: &str, string_secrets: [&str; NUM_CEREMONIES]) -> Result<()> {
     let json = read_json_file(in_path)?;
-    let (result, proofs) = contribute_with_string(json, string_secrets)?;
+    let result = contribute_with_string(json, string_secrets)?;
 
-    write_json_file(out_path, &result)?;
-    write_json_file(proof_path, &proofs)
+    write_json_file(out_path, &result)
 }
 /**
  * We'll use this function in the wasm
  */
-pub fn contribute_with_string(json: String, string_secrets: [&str; NUM_CEREMONIES]) -> Result<(String, String)> {
+pub fn contribute_with_string(json: String, string_secrets: [&str; NUM_CEREMONIES]) -> Result<String> {
     let secrets = string_secrets.map(|s| s.to_string());
+
+    let mut contribution = serde_json::from_str::<BatchContribution>(&json)?;
+    contribution.add_entropy::<BLST>(&secrets.into())?;
+    Ok(serde_json::to_string(&contribution)?)
+
+    /*
     let contribution = json_to_contribution(json)?;
     let (post, update_proofs) = contribute(contribution, secrets)?;
 
@@ -48,6 +55,8 @@ pub fn contribute_with_string(json: String, string_secrets: [&str; NUM_CEREMONIE
 
     let proofs_string = update_proofs_to_json(update_proofs)?;
     Ok((post_string, proofs_string))
+    */
+
 }
 /**
  * Core function: add participant contribution
