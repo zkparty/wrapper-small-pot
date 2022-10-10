@@ -129,7 +129,8 @@ pub fn get_pot_pubkeys(string_secrets: [&str; NUM_CEREMONIES]) -> Result<Vec<Str
     for(_i, secret_string) in string_secrets.into_iter().enumerate() {
         let secret_hex = secret_string.to_string();
         if let Some(secret_stripped) = secret_hex.strip_prefix("0x") {
-            let bytes = <[u8; 32]>::from_hex(secret_stripped).expect("secret is not 64 characters long");
+            let bytes = <[u8; 48]>::from_hex(secret_stripped)
+            .expect("secret is not 64 characters long");
             if !bytes.is_empty() {
                 let private_key = PrivateKey::from_bytes(&bytes);
                 let mut a = hex::encode(serialize_g2(&private_key.to_public().into_affine()));
