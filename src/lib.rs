@@ -17,8 +17,7 @@ use small_powers_of_tau::sdk::contribution::{
     ContributionJSON,
     Contribution,
 };
-use kzg_ceremony_crypto::BLST;
-use kzg_ceremony_crypto::BatchContribution;
+use kzg_ceremony_crypto::{BatchContribution, BLST, derive_taus};
 
 /**
  * We'll use this function in the cli
@@ -134,6 +133,12 @@ fn verify_update(old_contribution: Contribution, new_contribution: Contribution,
  * Core function: get potPubkeys from secrets
  */
 pub fn get_pot_pubkeys(string_secrets: [&str; NUM_CEREMONIES]) -> Result<Vec<String>> {
+    let secrets = string_secrets.map(|s| s.to_string());
+
+    let taus = derive_taus::<BLST>(&secrets.into(), NUM_CEREMONIES);
+    Ok(taus)
+
+    /*
     let mut pot_pubkeys = Vec::with_capacity(NUM_CEREMONIES);
     for(_i, secret_string) in string_secrets.into_iter().enumerate() {
         let secret_hex = secret_string.to_string();
@@ -149,6 +154,7 @@ pub fn get_pot_pubkeys(string_secrets: [&str; NUM_CEREMONIES]) -> Result<Vec<Str
         }
     }
     Ok(pot_pubkeys)
+    */
 }
 
 
