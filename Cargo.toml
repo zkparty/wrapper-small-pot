@@ -23,7 +23,7 @@ hex = "0.4.3"
 serde = { version = "1", features = ["derive"] }
 serde-wasm-bindgen = "0.4"
 serde_json = "1.0.48"
-kzg-ceremony-crypto = { git = "https://github.com/ethereum/kzg-ceremony-sequencer.git", features = ["blst"]}
+kzg-ceremony-crypto = { path = "../kzg-ceremony-sequencer/crypto", features = ["blst"]}
 small-powers-of-tau = { git = "https://github.com/zkparty/small-powers-of-tau" }
 
 [target."wasm32-unknown-unknown".dependencies]
