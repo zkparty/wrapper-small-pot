@@ -19,20 +19,22 @@ onmessage = async (event) => {
 
             console.log("start");
             const startTime = performance.now();
-            const result = contribute_wasm(
+            const result_string = contribute_wasm(
                 json_string,
                 secret,
                 identity,
             );
             const endTime = performance.now();
+            const result = JSON.parse(result_string);
             console.log(result)
             console.log(`Contribution took ${endTime - startTime} milliseconds`);
 
-            // TODO: finish check contribution
-            /*
-            const checkContribution = subgroup_check_wasm(result);
-            console.log(checkContribution)
-            */
+            // check initial contribution
+            const checkInitialContribution = subgroup_check_wasm(json_string);
+            console.log(checkInitialContribution)
+            // check updated contribution
+            const checkUpdatedContribution = subgroup_check_wasm(result_string);
+            console.log(checkUpdatedContribution)
         });
     });
 }
