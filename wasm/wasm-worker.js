@@ -14,31 +14,25 @@ onmessage = async (event) => {
     fetch('./initialContribution.json').then(response => {
         response.json().then(async (data) => {
             const json_string = JSON.stringify(data);
-            let secrets = await Promise.all([
-                sha256(entropy[0]),
-                sha256(entropy[1]),
-                sha256(entropy[2]),
-                sha256(entropy[3]),
-            ]);
-            secrets = secrets.map(secret => '0x' + secret);
+            let secret = await sha256(entropy);
+            let identity = "eth|0x000000000000000000000000000000000000dead";
 
             console.log("start");
             const startTime = performance.now();
             const result = contribute_wasm(
                 json_string,
-                secrets[0],
-                secrets[1],
-                secrets[2],
-                secrets[3],
+                secret,
+                identity,
             );
             const endTime = performance.now();
-
-            const postContribution = JSON.parse(result.contribution);
-            console.log(postContribution);
+            console.log(result)
             console.log(`Contribution took ${endTime - startTime} milliseconds`);
 
-            const checkContribution = subgroup_check_wasm(result.contribution);
+            // TODO: finish check contribution
+            /*
+            const checkContribution = subgroup_check_wasm(result);
             console.log(checkContribution)
+            */
         });
     });
 }
