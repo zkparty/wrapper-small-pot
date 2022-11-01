@@ -1,7 +1,8 @@
 import init, {
     init_threads,
     contribute_wasm,
-    subgroup_check_wasm
+    subgroup_check_wasm,
+    get_pot_pubkeys_wasm,
 } from "./pkg/wrapper_small_pot.js";
 
 onmessage = async (event) => {
@@ -17,7 +18,11 @@ onmessage = async (event) => {
             let secret = await sha256(entropy);
             let identity = "eth|0x000000000000000000000000000000000000dead";
 
-            console.log("start");
+            console.log("get potPubkeys from entropy");
+            const potPubkeys = get_pot_pubkeys_wasm(secret);
+            console.log(potPubkeys);
+
+            console.log("start contribution");
             const startTime = performance.now();
             const result_string = contribute_wasm(
                 json_string,
@@ -29,6 +34,7 @@ onmessage = async (event) => {
             console.log(result)
             console.log(`Contribution took ${endTime - startTime} milliseconds`);
 
+            console.log("perform subgroups checks in previous and new contribution");
             // check initial contribution
             const checkInitialContribution = subgroup_check_wasm(json_string);
             console.log(checkInitialContribution)
