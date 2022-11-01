@@ -1,7 +1,8 @@
 import init, {
     init_threads,
     contribute_wasm,
-    subgroup_check_wasm
+    subgroup_check_wasm,
+    get_pot_pubkeys_wasm,
 } from "./pkg/wrapper_small_pot.js";
 
 onmessage = async (event) => {
@@ -14,31 +15,32 @@ onmessage = async (event) => {
     fetch('./initialContribution.json').then(response => {
         response.json().then(async (data) => {
             const json_string = JSON.stringify(data);
-            let secrets = await Promise.all([
-                sha256(entropy[0]),
-                sha256(entropy[1]),
-                sha256(entropy[2]),
-                sha256(entropy[3]),
-            ]);
-            secrets = secrets.map(secret => '0x' + secret);
+            let secret = await sha256(entropy);
+            let identity = "eth|0x000000000000000000000000000000000000dead";
 
-            console.log("start");
+            console.log("get potPubkeys from entropy");
+            const potPubkeys = get_pot_pubkeys_wasm(secret);
+            console.log(potPubkeys);
+
+            console.log("start contribution");
             const startTime = performance.now();
-            const result = contribute_wasm(
+            const result_string = contribute_wasm(
                 json_string,
-                secrets[0],
-                secrets[1],
-                secrets[2],
-                secrets[3],
+                secret,
+                identity,
             );
             const endTime = performance.now();
-
-            const postContribution = JSON.parse(result.contribution);
-            console.log(postContribution);
+            const result = JSON.parse(result_string);
+            console.log(result)
             console.log(`Contribution took ${endTime - startTime} milliseconds`);
 
-            const checkContribution = subgroup_check_wasm(result.contribution);
-            console.log(checkContribution)
+            console.log("perform subgroups checks in previous and new contribution");
+            // check initial contribution
+            const checkInitialContribution = subgroup_check_wasm(json_string);
+            console.log(checkInitialContribution)
+            // check updated contribution
+            const checkUpdatedContribution = subgroup_check_wasm(result_string);
+            console.log(checkUpdatedContribution)
         });
     });
 }
