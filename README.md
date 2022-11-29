@@ -1,5 +1,5 @@
 # wrapper-small-pot
-This wrapper create helper functions to integrate the [KZG sequencer crypto library](https://github.com/ethereum/kzg-ceremony-sequencer/tree/master/crypto) with a web implementation to contribute into the [KZG Ceremony](https://github.com/ethereum/kzg-ceremony).
+This wrapper create helper functions to integrate the [KZG sequencer crypto library](https://github.com/ethereum/kzg-ceremony-sequencer/tree/master/crypto) with a [web implementation](https://github.com/zkparty/trusted-setup-frontend) to contribute into the [KZG Ceremony](https://github.com/ethereum/kzg-ceremony).
 
 It previously used [Small Powers of Tau](https://github.com/crate-crypto/small-powers-of-tau) but we decided to on with the same code base as the sequencer.
 
