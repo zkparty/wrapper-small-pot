@@ -1,6 +1,6 @@
-FROM jdrouet/wasm-pack as builder
-WORKDIR /
+FROM jdrouet/wasm-pack:latest as builder
 COPY . .
+RUN rustup component add rust-src --toolchain nightly-2022-06-01-x86_64-unknown-linux-gnu
 CMD ["wasm-pack", "build", "--target", "web", "-d", "wasm/pkg"]
 
 # FROM debian:buster-slim
