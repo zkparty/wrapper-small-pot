@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:22.04
 
 RUN apt-get update
 RUN apt-get install -y \
@@ -16,4 +16,8 @@ RUN rustup component add rust-src --toolchain nightly-2022-06-01-x86_64-unknown-
 # Install wasm-pack
 RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh -s -- -y
 
-WORKDIR /work
+COPY . /root
+
+WORKDIR /root
+
+CMD ["wasm-pack", "build", '--target', "web", "-d", "wasm/pkg"]
