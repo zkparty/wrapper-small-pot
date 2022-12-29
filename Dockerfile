@@ -20,4 +20,7 @@ COPY . /root
 
 WORKDIR /root
 
-CMD ["wasm-pack", "build", '--target', "web", "-d", "wasm/pkg"]
+RUN echo '#!/bin/bash\nwasm-pack build --target web -d wasm/pkg' >> build.sh
+RUN chmod +x build.sh
+
+CMD ["./build.sh"]
