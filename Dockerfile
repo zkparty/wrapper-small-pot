@@ -1,5 +1,7 @@
 FROM ubuntu:22.04
 
+COPY . /root
+
 # Install Rust and prerequisites
 RUN apt-get update && \
     apt-get install -y \
@@ -14,8 +16,6 @@ RUN rustup target add wasm32-unknown-unknown && \
     rustup toolchain install nightly-2022-06-01-x86_64-unknown-linux-gnu && \
     rustup component add rust-src --toolchain nightly-2022-06-01-x86_64-unknown-linux-gnu && \
     curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh -s -- -y
-
-COPY . /root
 
 WORKDIR /root
 
