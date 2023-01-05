@@ -50,3 +50,25 @@ To test that the wasm is called correctly in a web setting, you need to:
 3. Go to [http://localhost:8000/]() and input some entropy. Open the devTools to check everything is ok.
 
 In some cases, the `wasm-worker.js` might not run and not throw any error. This issue could be caused because the functions in `wasm.rs` where not binded correctly.
+
+
+## Docker
+A Docker image is available, providing an environment in which to build this code. 
+
+The image, named `zkparty/wasm-pack-wrapper`, can be found in the hub at https://hub.docker.com/.
+
+### Building the WASM package
+
+The WASM package can, of course, be built in your local environment providing you the required Rust toolkit along with `wasm-pack`. The Docker image provides the necessary environment, and can be helpful in obtaining a reproducible build. 
+
+To make the WASM package folder accessible, you need to map a volume from your local environment to `/root/wasm`.
+
+Build the WASM package using a command similar to this: ```docker run -it --rm 
+    -v "</local/path/to/wasm/output/>:/root/wasm/" 
+    zkparty/wasm-pack-wrapper```
+
+### Build the Docker image
+To rebuild the Docker image after code changes:
+`docker build . -t zkparty/wasm-pack-wrapper`.
+
+
