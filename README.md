@@ -59,7 +59,7 @@ The image, named `zkparty/wasm-pack-wrapper`, can be found in the hub at https:/
 
 ### Building the WASM package
 
-The WASM package can, of course, be built in your local environment providing you have the requisite Rust toolkit along with `wasm-pack`. The Docker image provides the necessary environment, and can be helpful in obtaining a reproducible build. 
+The WASM package can, of course, be built in your local environment providing you the required Rust toolkit along with `wasm-pack`. The Docker image provides the necessary environment, and can be helpful in obtaining a reproducible build. 
 
 To make the WASM package folder accessible, you need to map a volume from your local environment to `/root/wasm`.
 
