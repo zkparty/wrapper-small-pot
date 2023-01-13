@@ -7,7 +7,7 @@ RUN apt-get update && \
     apt-get install -y \
     curl \
     build-essential \
-    clang-3.8 && \
+    clang-14 && \
     curl https://sh.rustup.rs -sSf | sh -s -- -y && \
     chmod +x /root/build.sh
 
