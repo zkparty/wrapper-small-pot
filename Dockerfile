@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 
-COPY . /root
+COPY . /root/source
 
 # Install Rust and prerequisites
 RUN apt-get update && \
@@ -9,7 +9,7 @@ RUN apt-get update && \
     build-essential \
     clang-14 && \
     curl https://sh.rustup.rs -sSf | sh -s -- -y && \
-    chmod +x /root/build.sh
+    chmod +x /root/source/build.sh
 
 ENV PATH="/root/.cargo/bin:${PATH}"
 # Install Rust components and wasm-pack
@@ -18,6 +18,6 @@ RUN rustup target add wasm32-unknown-unknown && \
     rustup component add rust-src --toolchain nightly-2022-06-01-x86_64-unknown-linux-gnu && \
     curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh -s -- -y
 
-WORKDIR /root
+WORKDIR /root/source
 
 CMD ["./build.sh"]
