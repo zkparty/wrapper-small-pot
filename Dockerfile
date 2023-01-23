@@ -8,6 +8,7 @@ RUN apt-get update && \
     curl \
     build-essential \
     clang-14 && \
+    ln -s /usr/bin/clang-14 /usr/bin/clang && \
     curl https://sh.rustup.rs -sSf | sh -s -- -y && \
     chmod +x /root/source/build.sh
 
