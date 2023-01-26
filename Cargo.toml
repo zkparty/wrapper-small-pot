@@ -24,7 +24,7 @@ secrecy = "0.8.0"
 serde = { version = "1", features = ["derive"] }
 serde-wasm-bindgen = "0.4"
 serde_json = "1.0.48"
-kzg-ceremony-crypto = { git = "https://github.com/ethereum/kzg-ceremony-sequencer.git", features = ["blst"]}
+kzg-ceremony-crypto = { git = "https://github.com/ethereum/kzg-ceremony-sequencer.git", branch = "master", features = ["blst"]}
 
 [target."wasm32-unknown-unknown".dependencies]
 js-sys = { version = "0.3.58"}
