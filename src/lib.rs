@@ -203,11 +203,16 @@ mod tests {
             }
         });
 
-        let t = serde_json::from_value::<Transcript>(json).unwrap();
+        let mut t = serde_json::from_value::<Transcript>(json).unwrap();
 
         // Verify pubkey sequence to end
         let result = verify_inclusion::<DefaultEngine>(&t, 1);
-        assert_eq!(result, Ok(()));
+        assert_eq!(Ok(()), result);
+
+        // Make it fail with a 0 point
+        t.witness.pubkeys[5] = G2::zero();
+        let result2 = verify_inclusion::<DefaultEngine>(&t, 1);
+        assert_eq!(Err(CeremonyError::ZeroPubkey), result2);
     
     }
 
