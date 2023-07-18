@@ -14,6 +14,9 @@ use kzg_ceremony_crypto::{
     Identity,
     get_pot_pubkeys,
     BatchContribution,
+    Transcript,
+    CeremonyError,
+    Engine,
 };
 
 /**
@@ -110,6 +113,27 @@ fn string_to_entropy(string_secret: &str) -> Secret<[u8; 32]> {
     .expect("secret should be a 32 hex string");
     let entropy = Secret::from(buffer);
    entropy
+}
+
+/// Verifies that a contribution is included in the transcript
+fn verify_inclusion<E: Engine>(t: &Transcript, contrib_idx: usize) -> Result<(), CeremonyError> {
+    assert!(contrib_idx < t.witness.products.len());
+
+    // Loop through subsequent witness entries. Do pairing check on each.
+    let mut index = contrib_idx;
+
+    while index < t.witness.products.len() {
+        // Pairing check: this & prev products, this pubkey
+        E::verify_pubkey(
+            t.witness.products[index],
+            t.witness.products[index - 1],
+            t.witness.pubkeys[index],
+        )?;
+
+        index += 1;
+    }
+
+    Ok(())
 }
 
 
