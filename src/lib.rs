@@ -124,6 +124,11 @@ fn verify_inclusion<E: Engine>(t: &Transcript, contrib_idx: usize) -> Result<(),
     let mut index = contrib_idx;
 
     while index < t.witness.products.len() {
+
+        if t.witness.pubkeys[index] == G2::zero() {
+            return Err(CeremonyError::ZeroPubkey);
+        }
+
         // Pairing check: this & prev products, this pubkey
         E::verify_pubkey(
             t.witness.products[index],
