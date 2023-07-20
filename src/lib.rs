@@ -123,21 +123,28 @@ fn verify_inclusion<E: Engine>(t: &Transcript, contrib_idx: usize) -> Result<(),
     // Loop through subsequent witness entries. Do pairing check on each.
     let mut index = contrib_idx;
 
-    while index < t.witness.products.len() {
+    if t
+        .witness
+        .pubkeys
+        .par_iter()
+        .any(| pubkey | t.witness.pubkeys[index] == G2::zero())
+            { return Err(CeremonyError::ZeroPubkey); };
 
-        if t.witness.pubkeys[index] == G2::zero() {
-            return Err(CeremonyError::ZeroPubkey);
-        }
-
-        // Pairing check: this & prev products, this pubkey
-        E::verify_pubkey(
-            t.witness.products[index],
-            t.witness.products[index - 1],
-            t.witness.pubkeys[index],
-        )?;
-
-        index += 1;
-    }
+    if t
+        .witness
+        .products
+        .par_iter()
+        .enumerate()
+        .any(|i, product| 
+            // Pairing check: this & prev products, this pubkey
+            E::verify_pubkey(
+                product,
+                t.witness.products[i - 1],
+                t.witness.pubkeys[i],
+            ) != Result(Ok(())))
+            {
+                return Err(CeremonyError::PubKeyPairingFailed)
+            };
 
     Ok(())
 }
