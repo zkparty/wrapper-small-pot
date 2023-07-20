@@ -14,6 +14,7 @@ use kzg_ceremony_crypto::{
     Identity,
     get_pot_pubkeys,
     BatchContribution,
+    BatchTranscript,
     Transcript,
     CeremonyError,
     Engine,
@@ -149,7 +150,23 @@ fn verify_inclusion<E: Engine>(t: &Transcript, contrib_idx: usize) -> Result<(),
     Ok(())
 }
 
+// Validate all transcripts for a given id
+fn verify_with_id<E:Engine>(bt: &BatchTranscript, id: string) -> Result<(), CeremonyError> {
+    let index = bt
+        .participant_ids
+        .par_iter()
+        .position(| u | *u == id)
+        .unwrap();
 
+    if bt
+        .transcripts
+        .iter()
+        .any( | t | verify_inclusion(t, index) != Result(Ok(()))) {
+            return Err(CeremonyError::PubKeyPairingFailed);
+        };
+
+    Ok(())
+}
 
 #[cfg(test)]
 mod tests {
