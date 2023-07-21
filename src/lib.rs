@@ -142,7 +142,7 @@ fn verify_inclusion<E: Engine>(t: &Transcript, contrib_idx: usize) -> Result<(),
                 product,
                 t.witness.products[i - 1],
                 t.witness.pubkeys[i],
-            ) != Result(Ok(())))
+            ).is_err())
             {
                 return Err(CeremonyError::PubKeyPairingFailed)
             };
@@ -161,7 +161,7 @@ fn verify_with_id<E:Engine>(bt: &BatchTranscript, id: string) -> Result<(), Cere
     if bt
         .transcripts
         .iter()
-        .any( | t | verify_inclusion(t, index) != Result(Ok(()))) {
+        .any( | t | verify_inclusion(t, index).is_err()) {
             return Err(CeremonyError::PubKeyPairingFailed);
         };
 
