@@ -18,7 +18,6 @@ use kzg_ceremony_crypto::{
     Transcript,
     CeremonyError,
     Engine,
-    DefaultEngine,
 };
 use rayon::prelude::*;
 
@@ -88,6 +87,34 @@ pub fn get_pot_pubkeys_with_string(string_secret: &str) -> Result<Vec<G2>> {
     let pot_pubkeys = get_pot_pubkeys::<BLST>(&entropy);
     Ok(pot_pubkeys)
 }
+/**
+ * We'll use this function in the cli
+ */
+pub fn verify_with_file(in_path: &str) -> Result<()> {
+    let json = read_json_file(in_path)?;
+    let result = verify_with_string(json)?;
+    Ok(println!("Verification is correct: {:?}", result))
+}
+/**
+ * We'll use this function in the wasm
+ */
+pub fn verify_with_string(json: String) -> Result<bool> {
+    // parse batch transcript object
+    let batch_transcript = serde_json::from_str::<BatchTranscript>(&json)
+    .expect("BatchTranscript deserialization failed");
+
+    let sizes = vec![(4096, 65)];
+    let result = batch_transcript.verify_self::<BLST>(sizes);
+
+    let is_valid = match result {
+        Ok(()) => true,
+        Err(error) => {
+            println!("{:?}", error);
+            false
+        },
+    };
+    Ok(is_valid)
+}
 
 
 /**
@@ -140,7 +167,7 @@ fn verify_inclusion<E: Engine>(t: &Transcript, contrib_idx: usize) -> Result<(),
         .par_iter()
         .enumerate()
         .filter(| (i, _) | i>=&contrib_idx)
-        .any(|(i, product)| 
+        .any(|(i, product)|
             // Pairing check: this & prev products, this pubkey
             E::verify_pubkey(
                 *product,
@@ -175,6 +202,7 @@ fn verify_with_id<E:Engine>(bt: &BatchTranscript, id: Identity) -> Result<(), Ce
 #[cfg(test)]
 mod tests {
     use super::*;
+    use kzg_ceremony_crypto::DefaultEngine;
 
     #[test]
     fn secrets_to_pubkey_test() {
@@ -241,7 +269,7 @@ mod tests {
         t.witness.pubkeys[5] = G2::zero();
         let result2 = verify_inclusion::<DefaultEngine>(&t, 1);
         assert_eq!(Err(CeremonyError::ZeroPubkey), result2);
-    
+
     }
 
 
@@ -462,7 +490,7 @@ mod tests {
         // Verify pubkey sequence to end
         let result = verify_with_id::<DefaultEngine>(&bt, u_id);
         assert!(result.is_ok());
-    
+
     }
 
 }
