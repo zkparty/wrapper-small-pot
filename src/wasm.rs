@@ -43,13 +43,3 @@ pub fn verify_wasm(transcript: &str) -> bool {
     let result = verify_with_string(transcript.to_string()).unwrap();
     return result;
 }
-
-#[wasm_bindgen]
-/// Verifies that a contribution is included in the transcript
-pub fn verify_inclusion(t_str: string, contrib_idx: usize) -> Result<(), CeremonyError> {
-    // Get transcript from json
-    let t = serde_json::from_value::<Transcript>(t_str).unwrap();
-
-    // Verify pubkey sequence to end
-    t.verify_inclusion::<DefaultEngine>(contrib_idx);
-}
