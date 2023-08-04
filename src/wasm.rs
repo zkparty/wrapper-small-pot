@@ -2,10 +2,12 @@ use std::panic;
 use js_sys::Promise;
 use wasm_bindgen::prelude::{wasm_bindgen, JsValue};
 use wasm_bindgen_rayon::init_thread_pool;
+use kzg_ceremony_crypto::{Transcript, CeremonyError};
 use crate::{
     get_pot_pubkeys_with_string,
     check_subgroup_with_string,
     contribute_with_string,
+    verify_with_string,
 };
 
 #[wasm_bindgen]
@@ -34,4 +36,10 @@ pub fn subgroup_check_wasm(input: &str) -> bool {
 pub fn get_pot_pubkeys_wasm(string_secret: &str) -> JsValue {
     let pot_pubkeys = get_pot_pubkeys_with_string(string_secret).unwrap();
     return serde_wasm_bindgen::to_value(&pot_pubkeys).unwrap();
+}
+
+#[wasm_bindgen]
+pub fn verify_wasm(transcript: &str) -> bool {
+    let result = verify_with_string(transcript.to_string()).unwrap();
+    return result;
 }

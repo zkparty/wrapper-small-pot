@@ -3,6 +3,7 @@ use wrapper_small_pot::{
     contribute_with_file,
     check_subgroup_with_file,
     get_pot_pubkeys_with_string,
+    verify_with_file,
 };
 
 fn main() {
@@ -34,5 +35,11 @@ fn main() {
     let start_subgroup_check = Instant::now();
     check_subgroup_with_file(in_path).unwrap();
     println!("subgroup check time: {:?}", start_subgroup_check.elapsed());
+
+    let transcript_path = "wasm/transcript.json";
+    println!("verify with file initialized");
+    let start_verify = Instant::now();
+    verify_with_file(transcript_path).unwrap();
+    println!("verify time: {:?}", start_verify.elapsed());
 
 }

@@ -3,6 +3,7 @@ import init, {
     contribute_wasm,
     subgroup_check_wasm,
     get_pot_pubkeys_wasm,
+    verify_wasm,
 } from "./pkg/wrapper_small_pot.js";
 
 onmessage = async (event) => {
@@ -41,6 +42,17 @@ onmessage = async (event) => {
             // check updated contribution
             const checkUpdatedContribution = subgroup_check_wasm(result_string);
             console.log(checkUpdatedContribution)
+        });
+    });
+
+    fetch('./transcript.json').then(response => {
+        response.json().then(async (data) => {
+            const json_string = JSON.stringify(data);
+            const startTime = performance.now();
+            const verify = verify_wasm(json_string);
+            const endTime = performance.now();
+            console.log(`Verify is: ${verify}`);
+            console.log(`Verification took ${endTime - startTime} milliseconds`);
         });
     });
 }
