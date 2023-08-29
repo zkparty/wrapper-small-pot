@@ -36,7 +36,7 @@ To build and run tests, run:
 ## Wasm
 
 ### **Build**
-To get the files for integrate the code into Javascript, you can run:
+To get the files for integrating the code into Javascript, you can run:
 
 ``` wasm-pack build --target web -d wasm/pkg ```
 
